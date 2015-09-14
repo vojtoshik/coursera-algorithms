@@ -1,6 +1,5 @@
 import edu.princeton.cs.algs4.StdStats;
 
-import java.util.Optional;
 import java.util.Random;
 
 public class PercolationStats {
