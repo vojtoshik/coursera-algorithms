@@ -42,11 +42,11 @@ public class Percolation {
     }
 
     public boolean isOpen(int i, int j) {
-        return grid[normalizeIndex(i, j)] == 1;
+        return grid[normalizeIndex(i, j)] == 1 && !quickUnionContainer.connected(0, quNormalizeIndex(i, j));
     }
 
     public boolean isFull(int i, int j) {
-        return !isOpen(i, j);
+        return grid[normalizeIndex(i, j)] == 1 && quickUnionContainer.connected(0, quNormalizeIndex(i, j));
     }
 
     private void makeConnection(int i1, int j1, int i2, int j2) {
