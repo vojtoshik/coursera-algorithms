@@ -7,22 +7,9 @@ public class PercolationStats {
 
     private final double[] results;
 
-    private Double mean;
+    private double mean;
 
-    private Double stddev;
-
-    public static void main(String[] args) {
-
-        if (args.length < 2) {
-            throw new IllegalArgumentException("N and T values have to be provided!");
-        }
-
-        PercolationStats stats = new PercolationStats(Integer.parseInt(args[0]), Integer.parseInt(args[0]));
-
-        System.out.println("mean = " + stats.mean());
-        System.out.println("stddev = " + stats.stddev());
-        System.out.println("95% confidence interval = " + stats.confidenceLo() + ", " +stats.confidenceHi());
-    }
+    private double stddev;
 
     public PercolationStats(int N, int T) {
 
@@ -39,22 +26,39 @@ public class PercolationStats {
                 openedCellsNumber++;
             }
 
-            results[i] = (double)openedCellsNumber/N/N;
+            results[i] = (double) openedCellsNumber/N/N;
         }
     }
 
+    public static void main(String[] args) {
+
+        if (args.length < 2) {
+            throw new IllegalArgumentException("N and T values have to be provided!");
+        }
+
+        PercolationStats stats = new PercolationStats(Integer.parseInt(args[0]), Integer.parseInt(args[0]));
+
+        System.out.println("mean = " + stats.mean());
+        System.out.println("stddev = " + stats.stddev());
+        System.out.println("95% confidence interval = " + stats.confidenceLo() + ", " +stats.confidenceHi());
+    }
+
     public double mean() {
-        return Optional.ofNullable(mean).orElseGet(() -> {
+
+        if (mean == 0) {
             mean = StdStats.mean(results);
-            return mean;
-        });
+        }
+
+        return mean;
     }
 
     public double stddev() {
-        return Optional.ofNullable(stddev).orElseGet(() -> {
+
+        if (stddev == 0) {
             stddev = StdStats.stddev(results);
-            return stddev;
-        });
+        }
+
+        return stddev;
     }
 
     public double confidenceLo() {

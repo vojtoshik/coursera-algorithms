@@ -1,10 +1,5 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Scanner;
-
 public class Percolation {
 
     private int[] grid;
@@ -19,30 +14,6 @@ public class Percolation {
         quickUnionContainer = new WeightedQuickUnionUF(gridSize * gridSize + 2);
     }
 
-    public static void main(String[] args) {
-
-        if (args.length < 1) {
-            System.out.println("No filename with input data specified! Exiting...");
-            return;
-        }
-
-        try {
-            InputStream is = new FileInputStream(args[0]);
-            Scanner scanner = new Scanner(is);
-
-            int gridSize = scanner.nextInt();
-            Percolation percolation = new Percolation(gridSize);
-
-            while (scanner.hasNextInt()) {
-                percolation.open(scanner.nextInt(), scanner.nextInt());
-            }
-
-            System.out.println("Percolates: " + (percolation.percolates() ? "yes" : "no"));
-        } catch (FileNotFoundException e) {
-            System.out.println("Failed to open file \"" + args[0] + "\" for reading! Exiting...");
-        }
-    }
-
     public boolean percolates() {
         return quickUnionContainer.connected(0, gridSize * gridSize + 1);
     }
@@ -55,7 +26,7 @@ public class Percolation {
                     quNormalizeIndex(i, j),
                     0
             );
-        };
+        }
 
         if (i == gridSize) {
             quickUnionContainer.union(
