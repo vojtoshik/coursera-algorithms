@@ -12,7 +12,12 @@ public class PercolationStats {
     private Double stddev;
 
     public static void main(String[] args) {
-        PercolationStats stats = new PercolationStats(100, 10000);
+
+        if (args.length < 2) {
+            throw new IllegalArgumentException("N and T values have to be provided!");
+        }
+
+        PercolationStats stats = new PercolationStats(Integer.parseInt(args[0]), Integer.parseInt(args[0]));
 
         System.out.println("mean = " + stats.mean());
         System.out.println("stddev = " + stats.stddev());
