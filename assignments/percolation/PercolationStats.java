@@ -12,6 +12,10 @@ public class PercolationStats {
 
     public PercolationStats(int N, int T) {
 
+        if (T <= 0 || N <= 0) {
+            throw new IllegalArgumentException("Bad input arguments!");
+        }
+
         results = new double[T];
 
         for (int i = 0; i < T; i++) {
@@ -37,10 +41,6 @@ public class PercolationStats {
 
         int N = Integer.parseInt(args[0]);
         int T = Integer.parseInt(args[1]);
-
-        if (T <= 0) {
-            throw new IllegalArgumentException("Bad number of iterations provided!");
-        }
 
         PercolationStats stats = new PercolationStats(N, T);
 
