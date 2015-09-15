@@ -35,7 +35,14 @@ public class PercolationStats {
             throw new IllegalArgumentException("N and T values have to be provided!");
         }
 
-        PercolationStats stats = new PercolationStats(Integer.parseInt(args[0]), Integer.parseInt(args[0]));
+        int N = Integer.parseInt(args[0]);
+        int T = Integer.parseInt(args[1]);
+
+        if (T <= 0) {
+            throw new IllegalArgumentException("Bad number of iterations provided!");
+        }
+
+        PercolationStats stats = new PercolationStats(N, T);
 
         System.out.println("mean = " + stats.mean());
         System.out.println("stddev = " + stats.stddev());

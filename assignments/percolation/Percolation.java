@@ -9,6 +9,11 @@ public class Percolation {
     private final WeightedQuickUnionUF quickUnionContainer;
 
     public Percolation(int N) {
+
+        if (N <= 0) {
+            throw new IllegalArgumentException("Bad value for grid size provided!");
+        }
+
         gridSize = N;
         grid = new int[gridSize * gridSize];
         quickUnionContainer = new WeightedQuickUnionUF(gridSize * gridSize + 2);
@@ -42,7 +47,7 @@ public class Percolation {
     }
 
     public boolean isOpen(int i, int j) {
-        return grid[normalizeIndex(i, j)] == 1 && !quickUnionContainer.connected(0, quNormalizeIndex(i, j));
+        return grid[normalizeIndex(i, j)] == 1;
     }
 
     public boolean isFull(int i, int j) {
