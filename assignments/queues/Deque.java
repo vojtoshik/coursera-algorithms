@@ -38,7 +38,7 @@ public class Deque<T> implements Iterable<T> {
     public void addFirst(T item) {
         validateItem(item);
 
-        Entry newEntry = new Entry(null, head, item);
+        Entry<T> newEntry = new Entry<T>(null, head, item);
 
         if (head != null) {
             head.setPrevious(newEntry);
@@ -57,7 +57,7 @@ public class Deque<T> implements Iterable<T> {
     public void addLast(T item) {
         validateItem(item);
 
-        Entry newEntry = new Entry(tail, null, item);
+        Entry<T> newEntry = new Entry<T>(tail, null, item);
 
         if (tail != null) {
             tail.setNext(newEntry);
@@ -76,7 +76,7 @@ public class Deque<T> implements Iterable<T> {
     public T removeFirst() {
         verifyContainerIsNotEmpty();
 
-        Entry entryToRemove = head;
+        Entry<T> entryToRemove = head;
         head = head.getNext();
 
         // we do this to avoid memory leaks
@@ -96,7 +96,7 @@ public class Deque<T> implements Iterable<T> {
     public T removeLast() {
         verifyContainerIsNotEmpty();
 
-        Entry entryToRemove = tail;
+        Entry<T> entryToRemove = tail;
         tail = tail.getPrevious();
 
         // no memory leaks, ok?
@@ -129,14 +129,14 @@ public class Deque<T> implements Iterable<T> {
         }
     }
 
-    private class Entry {
+    private class Entry<T> {
 
-        private Entry previous;
-        private Entry next;
+        private Entry<T> previous;
+        private Entry<T> next;
 
         private T content;
 
-        public Entry(Entry previous, Entry next, T content) {
+        public Entry(Entry<T> previous, Entry<T> next, T content) {
             this.previous = previous;
             this.next = next;
 
@@ -170,7 +170,7 @@ public class Deque<T> implements Iterable<T> {
      */
     private class DequeIterator implements Iterator<T> {
 
-        private Entry head;
+        private Entry<T> head;
 
         public DequeIterator(Entry head) {
             this.head = head;
