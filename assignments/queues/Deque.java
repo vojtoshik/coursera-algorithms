@@ -22,8 +22,8 @@ public class Deque<Item> implements Iterable<Item> {
 
     private int size;
 
-    private Entry head;
-    private Entry tail;
+    private Entry<Item> head;
+    private Entry<Item> tail;
 
     public Deque() {
 
@@ -40,7 +40,7 @@ public class Deque<Item> implements Iterable<Item> {
     public void addFirst(Item item) {
         validateItem(item);
 
-        Entry<Item> newEntry = new Entry<Item>(null, head, item);
+        Entry<Item> newEntry = new Entry<>(null, head, item);
 
         if (head != null) {
             head.setPrevious(newEntry);
@@ -59,7 +59,7 @@ public class Deque<Item> implements Iterable<Item> {
     public void addLast(Item item) {
         validateItem(item);
 
-        Entry<Item> newEntry = new Entry<Item>(tail, null, item);
+        Entry<Item> newEntry = new Entry<>(tail, null, item);
 
         if (tail != null) {
             tail.setNext(newEntry);
@@ -145,19 +145,19 @@ public class Deque<Item> implements Iterable<Item> {
             this.content = content;
         }
 
-        public Entry getPrevious() {
+        public Entry<Item> getPrevious() {
             return previous;
         }
 
-        public void setPrevious(Entry previous) {
+        public void setPrevious(Entry<Item> previous) {
             this.previous = previous;
         }
 
-        public Entry getNext() {
+        public Entry<Item> getNext() {
             return next;
         }
 
-        public void setNext(Entry next) {
+        public void setNext(Entry<Item> next) {
             this.next = next;
         }
 
@@ -174,7 +174,7 @@ public class Deque<Item> implements Iterable<Item> {
 
         private Entry<Item> head;
 
-        public DequeIterator(Entry head) {
+        public DequeIterator(Entry<Item> head) {
             this.head = head;
         }
 

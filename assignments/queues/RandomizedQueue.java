@@ -49,7 +49,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         verifyEntryNotNull(item);
 
-        Entry<Item> newItem = new Entry(item);
+        Entry<Item> newItem = new Entry<>(item);
 
         if (isEmpty()) {
             newItem.next = newItem;
