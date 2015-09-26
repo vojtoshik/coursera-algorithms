@@ -34,30 +34,6 @@ public class RandomizedQueue<T> {
     private final static int STEP_LOWER_BOUND = 1;
     private final static int STEP_UPPER_BOUND = 10;
 
-    public static void main(String[] args) {
-        RandomizedQueue<Integer> randomizedQueue = new RandomizedQueue<>();
-
-        randomizedQueue.enqueue(1);
-        randomizedQueue.enqueue(2);
-        randomizedQueue.enqueue(3);
-        randomizedQueue.enqueue(4);
-        randomizedQueue.enqueue(5);
-        randomizedQueue.enqueue(6);
-        randomizedQueue.enqueue(7);
-        randomizedQueue.enqueue(8);
-        randomizedQueue.enqueue(9);
-
-        System.out.println(randomizedQueue.dequeue());
-        System.out.println(randomizedQueue.dequeue());
-        System.out.println(randomizedQueue.dequeue());
-        System.out.println(randomizedQueue.dequeue());
-        System.out.println(randomizedQueue.dequeue());
-        System.out.println(randomizedQueue.dequeue());
-        System.out.println(randomizedQueue.dequeue());
-        System.out.println(randomizedQueue.dequeue());
-        System.out.println(randomizedQueue.dequeue());
-    }
-
     public RandomizedQueue() {
 
     }
@@ -77,20 +53,20 @@ public class RandomizedQueue<T> {
         Entry<T> newItem = new Entry(item);
 
         if (isEmpty()) {
-            newItem.setNext(newItem);
-            newItem.setPrevious(newItem);
+            newItem.next = newItem;
+            newItem.previous = newItem;
 
             randomCursor = newItem;
         } else {
             randomCursor = getRandomEntry(randomCursor);
 
-            Entry<T> nextItem = randomCursor.getNext();
-            randomCursor.setNext(newItem);
+            Entry<T> nextItem = randomCursor.next;
+            randomCursor.next = newItem;
 
-            newItem.setPrevious(randomCursor);
-            newItem.setNext(nextItem);
+            newItem.previous = randomCursor;
+            newItem.next = nextItem;
 
-            nextItem.setPrevious(newItem);
+            nextItem.previous = newItem;
         }
 
         size++;
@@ -104,13 +80,13 @@ public class RandomizedQueue<T> {
         if (size == 1) {
             randomCursor = null;
         } else {
-            randomCursor = itemToReturn.getPrevious();
-            randomCursor.setNext(itemToReturn.getNext());
-            itemToReturn.getNext().setPrevious(randomCursor);
+            randomCursor = itemToReturn.previous;
+            randomCursor.next = itemToReturn.next;
+            itemToReturn.next.previous = randomCursor;
         }
 
         size--;
-        return itemToReturn.getContent();
+        return itemToReturn.content;
     }
 
     public T sample() {
@@ -118,18 +94,18 @@ public class RandomizedQueue<T> {
         verifyQueueIsNotEmpty();
 
         randomCursor = getRandomEntry(randomCursor);
-        return randomCursor.getContent();
+        return randomCursor.content;
     }
 
     public Iterator<T> iterator() {
-        return null;
+        return new RandomizedIterator();
     }
 
     private Entry<T> getRandomEntry(Entry<T> cursor) {
         int steps = StdRandom.uniform(STEP_LOWER_BOUND, STEP_UPPER_BOUND);
 
         for (int i = 0; i < steps; i++) {
-            cursor = cursor.getNext();
+            cursor = cursor.next;
         }
 
         return cursor;
@@ -156,25 +132,30 @@ public class RandomizedQueue<T> {
         public Entry(T content) {
             this.content = content;
         }
+    }
 
-        public Entry<T> getPrevious() {
-            return previous;
+    private class RandomizedIterator implements Iterator<T> {
+
+        private RandomizedQueue<T> internalQueue;
+
+        public RandomizedIterator() {
+            internalQueue = new RandomizedQueue<>();
+            Entry<T> currentCursor = randomCursor;
+
+            for (int i = 0; i < size; i++) {
+                internalQueue.enqueue(currentCursor.content);
+                currentCursor = currentCursor.next;
+            }
         }
 
-        public void setPrevious(Entry<T> previous) {
-            this.previous = previous;
+        @Override
+        public boolean hasNext() {
+            return !internalQueue.isEmpty();
         }
 
-        public Entry<T> getNext() {
-            return next;
-        }
-
-        public void setNext(Entry<T> next) {
-            this.next = next;
-        }
-
-        public T getContent() {
-            return content;
+        @Override
+        public T next() {
+            return internalQueue.dequeue();
         }
     }
 }
