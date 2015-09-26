@@ -25,11 +25,11 @@ import java.util.NoSuchElementException;
  * in constant worst-case time; and construction in linear time; you may (and will need to) use a linear amount of extra
  * memory per iterator.
  */
-public class RandomizedQueue<T> {
+public class RandomizedQueue<Item> {
 
     private int size;
 
-    private Entry<T> randomCursor;
+    private Entry<Item> randomCursor;
 
     private final static int STEP_LOWER_BOUND = 1;
     private final static int STEP_UPPER_BOUND = 10;
@@ -46,11 +46,11 @@ public class RandomizedQueue<T> {
         return size;
     }
 
-    public void enqueue(T item) {
+    public void enqueue(Item item) {
 
         verifyEntryNotNull(item);
 
-        Entry<T> newItem = new Entry(item);
+        Entry<Item> newItem = new Entry(item);
 
         if (isEmpty()) {
             newItem.next = newItem;
@@ -60,7 +60,7 @@ public class RandomizedQueue<T> {
         } else {
             randomCursor = getRandomEntry(randomCursor);
 
-            Entry<T> nextItem = randomCursor.next;
+            Entry<Item> nextItem = randomCursor.next;
             randomCursor.next = newItem;
 
             newItem.previous = randomCursor;
@@ -72,10 +72,10 @@ public class RandomizedQueue<T> {
         size++;
     }
 
-    public T dequeue() {
+    public Item dequeue() {
         verifyQueueIsNotEmpty();
 
-        Entry<T> itemToReturn = getRandomEntry(randomCursor);
+        Entry<Item> itemToReturn = getRandomEntry(randomCursor);
 
         if (size == 1) {
             randomCursor = null;
@@ -89,7 +89,7 @@ public class RandomizedQueue<T> {
         return itemToReturn.content;
     }
 
-    public T sample() {
+    public Item sample() {
 
         verifyQueueIsNotEmpty();
 
@@ -97,11 +97,11 @@ public class RandomizedQueue<T> {
         return randomCursor.content;
     }
 
-    public Iterator<T> iterator() {
+    public Iterator<Item> iterator() {
         return new RandomizedIterator();
     }
 
-    private Entry<T> getRandomEntry(Entry<T> cursor) {
+    private Entry<Item> getRandomEntry(Entry<Item> cursor) {
         int steps = StdRandom.uniform(STEP_LOWER_BOUND, STEP_UPPER_BOUND);
 
         for (int i = 0; i < steps; i++) {
@@ -111,7 +111,7 @@ public class RandomizedQueue<T> {
         return cursor;
     }
 
-    private void verifyEntryNotNull(T item) {
+    private void verifyEntryNotNull(Item item) {
         if (item == null) {
             throw new NullPointerException("Nulls are not allowed");
         }
@@ -123,24 +123,24 @@ public class RandomizedQueue<T> {
         }
     }
 
-    private class Entry<T> {
-        private Entry<T> previous;
-        private Entry<T> next;
+    private class Entry<Item> {
+        private Entry<Item> previous;
+        private Entry<Item> next;
 
-        private T content;
+        private Item content;
 
-        public Entry(T content) {
+        public Entry(Item content) {
             this.content = content;
         }
     }
 
-    private class RandomizedIterator implements Iterator<T> {
+    private class RandomizedIterator implements Iterator<Item> {
 
-        private RandomizedQueue<T> internalQueue;
+        private RandomizedQueue<Item> internalQueue;
 
         public RandomizedIterator() {
             internalQueue = new RandomizedQueue<>();
-            Entry<T> currentCursor = randomCursor;
+            Entry<Item> currentCursor = randomCursor;
 
             for (int i = 0; i < size; i++) {
                 internalQueue.enqueue(currentCursor.content);
@@ -154,7 +154,7 @@ public class RandomizedQueue<T> {
         }
 
         @Override
-        public T next() {
+        public Item next() {
             return internalQueue.dequeue();
         }
     }

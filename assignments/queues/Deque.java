@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
  * Additionally, your iterator implementation must support each operation (including construction) in constant
  * worst-case time.
  */
-public class Deque<T> implements Iterable<T> {
+public class Deque<Item> implements Iterable<Item> {
 
     private int size;
 
@@ -35,10 +35,10 @@ public class Deque<T> implements Iterable<T> {
         return size;
     }
 
-    public void addFirst(T item) {
+    public void addFirst(Item item) {
         validateItem(item);
 
-        Entry<T> newEntry = new Entry<T>(null, head, item);
+        Entry<Item> newEntry = new Entry<Item>(null, head, item);
 
         if (head != null) {
             head.setPrevious(newEntry);
@@ -54,10 +54,10 @@ public class Deque<T> implements Iterable<T> {
         size++;
     }
 
-    public void addLast(T item) {
+    public void addLast(Item item) {
         validateItem(item);
 
-        Entry<T> newEntry = new Entry<T>(tail, null, item);
+        Entry<Item> newEntry = new Entry<Item>(tail, null, item);
 
         if (tail != null) {
             tail.setNext(newEntry);
@@ -73,10 +73,10 @@ public class Deque<T> implements Iterable<T> {
         size++;
     }
 
-    public T removeFirst() {
+    public Item removeFirst() {
         verifyContainerIsNotEmpty();
 
-        Entry<T> entryToRemove = head;
+        Entry<Item> entryToRemove = head;
         head = head.getNext();
 
         // we do this to avoid memory leaks
@@ -93,10 +93,10 @@ public class Deque<T> implements Iterable<T> {
         return entryToRemove.getContent();
     }
 
-    public T removeLast() {
+    public Item removeLast() {
         verifyContainerIsNotEmpty();
 
-        Entry<T> entryToRemove = tail;
+        Entry<Item> entryToRemove = tail;
         tail = tail.getPrevious();
 
         // no memory leaks, ok?
@@ -113,7 +113,7 @@ public class Deque<T> implements Iterable<T> {
         return entryToRemove.getContent();
     }
 
-    public Iterator<T> iterator() {
+    public Iterator<Item> iterator() {
         return new DequeIterator(head);
     }
 
@@ -123,20 +123,20 @@ public class Deque<T> implements Iterable<T> {
         }
     }
 
-    private void validateItem(T item) {
+    private void validateItem(Item item) {
         if (item == null) {
             throw new NullPointerException("Nulls are not allowed!");
         }
     }
 
-    private class Entry<T> {
+    private class Entry<Item> {
 
-        private Entry<T> previous;
-        private Entry<T> next;
+        private Entry<Item> previous;
+        private Entry<Item> next;
 
-        private T content;
+        private Item content;
 
-        public Entry(Entry<T> previous, Entry<T> next, T content) {
+        public Entry(Entry<Item> previous, Entry<Item> next, Item content) {
             this.previous = previous;
             this.next = next;
 
@@ -159,7 +159,7 @@ public class Deque<T> implements Iterable<T> {
             this.next = next;
         }
 
-        public T getContent() {
+        public Item getContent() {
             return content;
         }
     }
@@ -168,9 +168,9 @@ public class Deque<T> implements Iterable<T> {
      * Terrible iterator. Modifications of the Deque will be visible (except removing last element from Deque - this
      * won't be visible by iterator).
      */
-    private class DequeIterator implements Iterator<T> {
+    private class DequeIterator implements Iterator<Item> {
 
-        private Entry<T> head;
+        private Entry<Item> head;
 
         public DequeIterator(Entry head) {
             this.head = head;
@@ -182,12 +182,12 @@ public class Deque<T> implements Iterable<T> {
         }
 
         @Override
-        public T next() {
+        public Item next() {
             if (head == null) {
                 throw new NoSuchElementException("No more items to iterate!");
             }
 
-            T entry = head.getContent();
+            Item entry = head.getContent();
             head = head.getNext();
 
             return entry;
