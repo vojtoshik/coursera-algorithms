@@ -1,4 +1,7 @@
+import edu.princeton.cs.algs4.StdRandom;
+
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * A randomized queue is similar to a stack or queue, except that the item removed is chosen uniformly at random from
@@ -26,6 +29,35 @@ public class RandomizedQueue<T> {
 
     private int size;
 
+    private Entry<T> randomCursor;
+
+    private final static int STEP_LOWER_BOUND = 1;
+    private final static int STEP_UPPER_BOUND = 10;
+
+    public static void main(String[] args) {
+        RandomizedQueue<Integer> randomizedQueue = new RandomizedQueue<>();
+
+        randomizedQueue.enqueue(1);
+        randomizedQueue.enqueue(2);
+        randomizedQueue.enqueue(3);
+        randomizedQueue.enqueue(4);
+        randomizedQueue.enqueue(5);
+        randomizedQueue.enqueue(6);
+        randomizedQueue.enqueue(7);
+        randomizedQueue.enqueue(8);
+        randomizedQueue.enqueue(9);
+
+        System.out.println(randomizedQueue.dequeue());
+        System.out.println(randomizedQueue.dequeue());
+        System.out.println(randomizedQueue.dequeue());
+        System.out.println(randomizedQueue.dequeue());
+        System.out.println(randomizedQueue.dequeue());
+        System.out.println(randomizedQueue.dequeue());
+        System.out.println(randomizedQueue.dequeue());
+        System.out.println(randomizedQueue.dequeue());
+        System.out.println(randomizedQueue.dequeue());
+    }
+
     public RandomizedQueue() {
 
     }
@@ -39,19 +71,80 @@ public class RandomizedQueue<T> {
     }
 
     public void enqueue(T item) {
-        return null;
+
+        verifyEntryNotNull(item);
+
+        Entry<T> newItem = new Entry(item);
+
+        if (isEmpty()) {
+            newItem.setNext(newItem);
+            newItem.setPrevious(newItem);
+
+            randomCursor = newItem;
+        } else {
+            randomCursor = getRandomEntry(randomCursor);
+
+            Entry<T> nextItem = randomCursor.getNext();
+            randomCursor.setNext(newItem);
+
+            newItem.setPrevious(randomCursor);
+            newItem.setNext(nextItem);
+
+            nextItem.setPrevious(newItem);
+        }
+
+        size++;
     }
 
     public T dequeue() {
-        return null;
+        verifyQueueIsNotEmpty();
+
+        Entry<T> itemToReturn = getRandomEntry(randomCursor);
+
+        if (size == 1) {
+            randomCursor = null;
+        } else {
+            randomCursor = itemToReturn.getPrevious();
+            randomCursor.setNext(itemToReturn.getNext());
+            itemToReturn.getNext().setPrevious(randomCursor);
+        }
+
+        size--;
+        return itemToReturn.getContent();
     }
 
     public T sample() {
-        return null;
+
+        verifyQueueIsNotEmpty();
+
+        randomCursor = getRandomEntry(randomCursor);
+        return randomCursor.getContent();
     }
 
     public Iterator<T> iterator() {
         return null;
+    }
+
+    private Entry<T> getRandomEntry(Entry<T> cursor) {
+        int steps = StdRandom.uniform(STEP_LOWER_BOUND, STEP_UPPER_BOUND);
+
+        for (int i = 0; i < steps; i++) {
+            cursor = cursor.getNext();
+        }
+
+        return cursor;
+    }
+
+    private void verifyEntryNotNull(T item) {
+        if (item == null) {
+            throw new NullPointerException("Nulls are not allowed");
+        }
+    }
+
+    private void verifyQueueIsNotEmpty() {
+        if (size == 0) {
+            throw new NoSuchElementException("Queue is empty!");
+        }
     }
 
     private class Entry<T> {
@@ -60,10 +153,28 @@ public class RandomizedQueue<T> {
 
         private T content;
 
-        public Entry(Entry previous, Entry next, T content) {
-            this.previous = previous;
-            this.next = next;
+        public Entry(T content) {
             this.content = content;
+        }
+
+        public Entry<T> getPrevious() {
+            return previous;
+        }
+
+        public void setPrevious(Entry<T> previous) {
+            this.previous = previous;
+        }
+
+        public Entry<T> getNext() {
+            return next;
+        }
+
+        public void setNext(Entry<T> next) {
+            this.next = next;
+        }
+
+        public T getContent() {
+            return content;
         }
     }
 }
