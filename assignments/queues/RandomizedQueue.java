@@ -25,7 +25,7 @@ import java.util.NoSuchElementException;
  * in constant worst-case time; and construction in linear time; you may (and will need to) use a linear amount of extra
  * memory per iterator.
  */
-public class RandomizedQueue<Item> {
+public class RandomizedQueue<Item> implements Iterable<Item> {
 
     private int size;
 
