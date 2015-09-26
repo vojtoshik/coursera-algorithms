@@ -1,7 +1,5 @@
 import edu.princeton.cs.algs4.StdIn;
 
-import java.util.NoSuchElementException;
-
 /**
  * Write a client program Subset.java that takes a command-line integer k; reads in a sequence of N strings from
  * standard input using StdIn.readString(); and prints out exactly k of them, uniformly at random. Each item from

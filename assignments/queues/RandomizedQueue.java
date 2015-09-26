@@ -27,12 +27,11 @@ import java.util.NoSuchElementException;
  */
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
+    private static final int STEP_LOWER_BOUND = 1;
+    private static final int STEP_UPPER_BOUND = 10;
+
     private int size;
-
     private Entry<Item> randomCursor;
-
-    private final static int STEP_LOWER_BOUND = 1;
-    private final static int STEP_UPPER_BOUND = 10;
 
     public RandomizedQueue() {
 
@@ -101,8 +100,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         return new RandomizedIterator();
     }
 
-    private Entry<Item> getRandomEntry(Entry<Item> cursor) {
+    private Entry<Item> getRandomEntry(Entry<Item> startPoint) {
         int steps = StdRandom.uniform(STEP_LOWER_BOUND, STEP_UPPER_BOUND);
+
+        Entry<Item> cursor = startPoint;
 
         for (int i = 0; i < steps; i++) {
             cursor = cursor.next;

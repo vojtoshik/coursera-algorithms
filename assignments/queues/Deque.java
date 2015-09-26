@@ -25,7 +25,9 @@ public class Deque<Item> implements Iterable<Item> {
     private Entry head;
     private Entry tail;
 
-    public Deque() {}
+    public Deque() {
+
+    }
 
     public boolean isEmpty() {
         return size == 0;
