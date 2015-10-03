@@ -7,4 +7,13 @@
     <groupId>com.vojtoshik.coursera.algorithms</groupId>
     <artifactId>main</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.9.6</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
