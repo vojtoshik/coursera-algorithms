@@ -10,6 +10,8 @@ import edu.princeton.cs.algs4.StdIn;
  * either one Deque or RandomizedQueue object of maximum size at most N, where N is the number of strings on standard
  * input. (For an extra challenge, use only one Deque or RandomizedQueue object of maximum size at most k.) It should
  * have the following API.
+ *
+ * @author Anton Voitovych <vojtoshik@gmail.com>
  */
 public class Subset {
     public static void main(String[] args) {

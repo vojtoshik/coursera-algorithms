@@ -24,6 +24,8 @@ import java.util.NoSuchElementException;
  * 48N + 192 bytes of memory. Additionally, your iterator implementation must support operations next() and hasNext()
  * in constant worst-case time; and construction in linear time; you may (and will need to) use a linear amount of extra
  * memory per iterator.
+ *
+ * @author Anton Voitovych <vojtoshik@gmail.com>
  */
 public class RandomizedQueue<Item> implements Iterable<Item> {
 

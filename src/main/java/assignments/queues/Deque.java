@@ -17,6 +17,8 @@ import java.util.NoSuchElementException;
  * must use at most 48N + 192 bytes of memory and use space proportional to the number of items currently in the deque.
  * Additionally, your iterator implementation must support each operation (including construction) in constant
  * worst-case time.
+ *
+ * @author Anton Voitovych <vojtoshik@gmail.com>
  */
 public class Deque<Item> implements Iterable<Item> {
 

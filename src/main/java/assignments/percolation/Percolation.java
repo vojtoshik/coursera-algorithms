@@ -1,5 +1,8 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
+/**
+ * @author Anton Voitovych <vojtoshik@gmail.com>
+ */
 public class Percolation {
 
     private int[] grid;

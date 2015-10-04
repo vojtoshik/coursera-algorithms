@@ -2,6 +2,9 @@ import edu.princeton.cs.algs4.StdStats;
 
 import java.util.Random;
 
+/**
+ * @author Anton Voitovych <vojtoshik@gmail.com>
+ */
 public class PercolationStats {
 
     private final double[] results;
