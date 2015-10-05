@@ -57,4 +57,17 @@ public class PointTest {
         p2 = new Point(-1, 1);
         assertEquals(p1.compareTo(p2), -1);
     }
+
+    @Test
+    public void testSlopeOrder() {
+        Comparator<Point> comparator = new Point(0, 0).slopeOrder();
+
+        Point p1 = new Point(5, 5),
+              p2 = new Point(6, 6);
+        assertEquals(comparator.compare(p1, p2), 0);
+
+        p2 = new Point(5, -5);
+        assertEquals(comparator.compare(p1, p2), 1);
+        assertEquals(comparator.compare(p2, p1), -1);
+    }
 }

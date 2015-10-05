@@ -110,15 +110,10 @@ public class Point implements Comparable<Point> {
         return new Comparator<Point>() {
             @Override
             public int compare(Point o1, Point o2) {
-                if (slopeTo(o1) == slopeTo(o2)) {
-                    return 0;
-                }
-
-                if (slopeTo(o1) < slopeTo(o2)) {
-                    return -1;
-                }
-
-                return 1;
+                return Double.compare(
+                        slopeTo(o1),
+                        slopeTo(o2)
+                );
             }
         };
     }
