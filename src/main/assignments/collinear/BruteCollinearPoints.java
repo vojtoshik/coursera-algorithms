@@ -20,8 +20,9 @@
  * @author Anton Voitovych <vojtoshik@gmail.com>
  */
 public class BruteCollinearPoints {
-    public BruteCollinearPoints(Point[] points) {
 
+    public BruteCollinearPoints(Point[] points) {
+        validateInputData(points);
     }
 
     public int numberOfSegments() {
@@ -30,5 +31,19 @@ public class BruteCollinearPoints {
 
     public LineSegment[] segments() {
         return null;
+    }
+
+    private void throwExceptionIfNull(Object value) {
+        if (value == null) {
+            throw new NullPointerException();
+        }
+    }
+
+    private void validateInputData(Point[] points) {
+        throwExceptionIfNull(points);
+
+        for (int i = 0; i < points.length; i++) {
+            throwExceptionIfNull(points[i]);
+        }
     }
 }
