@@ -133,11 +133,4 @@ public class Point implements Comparable<Point> {
     public String toString() {
         return "(" + x + ", " + y + ")";
     }
-
-    /**
-     * Unit tests the Point data type.
-     */
-    public static void main(String[] args) {
-        /* YOUR CODE HERE */
-    }
 }
