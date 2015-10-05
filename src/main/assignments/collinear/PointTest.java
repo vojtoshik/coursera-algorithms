@@ -1,5 +1,7 @@
 import org.testng.annotations.Test;
 
+import java.util.Comparator;
+
 import static org.testng.Assert.assertEquals;
 
 /**
@@ -11,7 +13,7 @@ public class PointTest {
         Point p1 = new Point(1, 1),
               p2 = new Point(1, 1);
 
-        assertEquals(Double.NEGATIVE_INFINITY, p1.slopeTo(p2));
+        assertEquals(p1.slopeTo(p2), Double.NEGATIVE_INFINITY);
     }
 
     @Test
@@ -19,7 +21,7 @@ public class PointTest {
         Point p1 = new Point(1, 10),
               p2 = new Point(1, 12);
 
-        assertEquals(Double.POSITIVE_INFINITY, p1.slopeTo(p2));
+        assertEquals(p1.slopeTo(p2), Double.POSITIVE_INFINITY);
     }
 
     @Test
@@ -27,6 +29,32 @@ public class PointTest {
         Point p1 = new Point(0, 0),
               p2 = new Point(1, 1);
 
-        assertEquals(1d, p1.slopeTo(p2));
+        assertEquals(p1.slopeTo(p2), 1d);
+    }
+
+    @Test
+    public void testCompareToWorksAsExpected() {
+        Point p1 = new Point(0, 0),
+              p2 = new Point(0, 1);
+
+        assertEquals(p1.compareTo(p2), -1);
+
+        p2 = new Point(0, -1);
+        assertEquals(p1.compareTo(p2), 1);
+
+        p2 = new Point(1, 0);
+        assertEquals(p1.compareTo(p2), -1);
+
+        p2 = new Point(-1, 0);
+        assertEquals(p1.compareTo(p2), 1);
+
+        p2 = new Point(0, 0);
+        assertEquals(p1.compareTo(p2), 0);
+
+        p2 = new Point(1, 1);
+        assertEquals(p1.compareTo(p2), -1);
+
+        p2 = new Point(-1, 1);
+        assertEquals(p1.compareTo(p2), -1);
     }
 }
