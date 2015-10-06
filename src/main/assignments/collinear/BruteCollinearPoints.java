@@ -21,16 +21,68 @@
  */
 public class BruteCollinearPoints {
 
+    private int numberOfSegments = 0;
+    private LineSegment[] segmentsContainer = new LineSegment[1];
+
     public BruteCollinearPoints(Point[] points) {
         validateInputData(points);
+
+        Insertion.sort(points);
+        checkForDuplicates(points);
+
+        if (points.length <= 4) {
+            return;
+        }
+
+        searchSegmentsWithBruteForce(points);
+    }
+
+    private void checkForDuplicates(Point[] points) {
+
+        for (int i = 1; i < points.length; i++) {
+
+            if (points[i - 1].compareTo(points[i]) == 0) {
+                throw new IllegalArgumentException("Duplicates are not allowed");
+            }
+        }
+    }
+
+    private void searchSegmentsWithBruteForce(Point[] points) {
+
+        for (int i = 0; i < points.length; i++) {
+
+            for (int j = i + 1; j < points.length; j++) {
+
+                for (int k = j + 1; k < points.length; k++) {
+
+                    if (points[i].slopeTo(points[j]) != points[i].slopeTo(points[k])) {
+                        continue;
+                    }
+
+                    for (int l = k + 1; l < points.length; l++) {
+
+                        if (points[i].slopeTo(points[k]) == points[i].slopeTo(points[l])) {
+                            addLineSegment(new LineSegment(points[i], points[l]));
+                            // we may stop at this point as there are only 4 points in the same segment
+                            break;
+                        }
+                    }
+
+                    // there's not need to iterate through rest of the points as soon as we identified 3rd
+                    break;
+                }
+            }
+        }
+
+        resizeSegmentsContainer(numberOfSegments);
     }
 
     public int numberOfSegments() {
-        return 0;
+        return numberOfSegments;
     }
 
     public LineSegment[] segments() {
-        return null;
+        return segmentsContainer;
     }
 
     private void throwExceptionIfNull(Object value) {
@@ -44,6 +96,44 @@ public class BruteCollinearPoints {
 
         for (int i = 0; i < points.length; i++) {
             throwExceptionIfNull(points[i]);
+        }
+    }
+
+    private void addLineSegment(LineSegment newLineSegment) {
+        if (numberOfSegments + 1 >= segmentsContainer.length) {
+            resizeSegmentsContainer(2 * segmentsContainer.length);
+        }
+
+        segmentsContainer[numberOfSegments++] = newLineSegment;
+    }
+
+    private void resizeSegmentsContainer(int newSize) {
+        LineSegment[] newSegments = new LineSegment[newSize];
+
+        for (int i = 0; i < numberOfSegments; i++) {
+            newSegments[i] = segmentsContainer[i];
+        }
+
+        segmentsContainer = newSegments;
+    }
+
+    private static class Insertion {
+
+        public static void sort(Point[] array) {
+
+            for (int i = 1; i < array.length; i++) {
+
+                for (int j = i; j > 0; j--) {
+
+                    if (array[j].compareTo(array[j - 1]) > -1) {
+                        break;
+                    }
+
+                    Point tmp = array[j];
+                    array[j] = array[j - 1];
+                    array[j - 1] = tmp;
+                }
+            }
         }
     }
 }
