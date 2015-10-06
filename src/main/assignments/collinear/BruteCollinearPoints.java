@@ -27,7 +27,7 @@ public class BruteCollinearPoints {
     public BruteCollinearPoints(Point[] points) {
         validateInputData(points);
 
-        Insertion.sort(points);
+        sort(points);
         checkForDuplicates(points);
 
         if (points.length <= 4) {
@@ -35,6 +35,14 @@ public class BruteCollinearPoints {
         }
 
         searchSegmentsWithBruteForce(points);
+    }
+
+    public int numberOfSegments() {
+        return numberOfSegments;
+    }
+
+    public LineSegment[] segments() {
+        return segmentsContainer;
     }
 
     private void checkForDuplicates(Point[] points) {
@@ -77,14 +85,6 @@ public class BruteCollinearPoints {
         resizeSegmentsContainer(numberOfSegments);
     }
 
-    public int numberOfSegments() {
-        return numberOfSegments;
-    }
-
-    public LineSegment[] segments() {
-        return segmentsContainer;
-    }
-
     private void throwExceptionIfNull(Object value) {
         if (value == null) {
             throw new NullPointerException();
@@ -117,22 +117,24 @@ public class BruteCollinearPoints {
         segmentsContainer = newSegments;
     }
 
-    private static class Insertion {
+    /**
+     * For this particular case Insertion sort should be sufficient
+     *
+     * @param array array to be sorted
+     */
+    private void sort(Point[] array) {
 
-        public static void sort(Point[] array) {
+        for (int i = 1; i < array.length; i++) {
 
-            for (int i = 1; i < array.length; i++) {
+            for (int j = i; j > 0; j--) {
 
-                for (int j = i; j > 0; j--) {
-
-                    if (array[j].compareTo(array[j - 1]) > -1) {
-                        break;
-                    }
-
-                    Point tmp = array[j];
-                    array[j] = array[j - 1];
-                    array[j - 1] = tmp;
+                if (array[j].compareTo(array[j - 1]) > -1) {
+                    break;
                 }
+
+                Point tmp = array[j];
+                array[j] = array[j - 1];
+                array[j - 1] = tmp;
             }
         }
     }
