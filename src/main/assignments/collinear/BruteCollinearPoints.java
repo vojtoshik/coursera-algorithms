@@ -26,8 +26,11 @@ public class BruteCollinearPoints {
 
     private List<LineSegment> segmentsList = new List<>();
 
-    public BruteCollinearPoints(Point[] points) {
-        validateInputData(points);
+    public BruteCollinearPoints(Point[] inputPoints) {
+        validateInputData(inputPoints);
+
+        // we do this to avoid modifications to original array (for example, by sorting)
+        Point[] points = copy(inputPoints);
 
         sort(points);
         checkForDuplicates(points);
@@ -52,6 +55,16 @@ public class BruteCollinearPoints {
         }
 
         return result;
+    }
+
+    private Point[] copy(Point[] inputPoints) {
+
+        Point[] pointsCopy = new Point[inputPoints.length];
+        for (int i = 0; i < inputPoints.length; i++) {
+            pointsCopy[i] = inputPoints[i];
+        }
+
+        return pointsCopy;
     }
 
     private void checkForDuplicates(Point[] points) {
@@ -134,13 +147,13 @@ public class BruteCollinearPoints {
      *
      * @param <T>
      */
-    private class ListEntry<T> {
+    private static class ListEntry<T> {
 
         private T payload;
         private ListEntry<T> next;
     }
 
-    private class List<T> implements Iterable<T> {
+    public static class List<T> implements Iterable<T> {
 
         private int itemsCount = 0;
 
@@ -168,11 +181,11 @@ public class BruteCollinearPoints {
 
         @Override
         public Iterator<T> iterator() {
-            return new ListIterator<T>(head);
+            return new ListIterator<>(head);
         }
     }
 
-    private class ListIterator<T> implements Iterator<T> {
+    public static class ListIterator<T> implements Iterator<T> {
 
         private ListEntry<T> cursor;
 
