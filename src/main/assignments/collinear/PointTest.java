@@ -70,4 +70,21 @@ public class PointTest {
         assertEquals(comparator.compare(p1, p2), 1);
         assertEquals(comparator.compare(p2, p1), -1);
     }
+
+    @Test
+    public void testFromCheckSystem() {
+        Point p =  new Point(3, 4);
+
+        Point p1 = new Point(1, 4),
+              p2 = new Point(9, 4);
+        assertEquals(p.slopeOrder().compare(p1, p2), 0);
+    }
+
+    @Test
+    public void testSlopeToReturnsPositiveZeroForHorizontalLine() {
+        Point p1 = new Point(1, 4),
+              p2 = new Point(9, 4);
+
+        assertEquals(p2.slopeTo(p1), 0f);
+    }
 }
