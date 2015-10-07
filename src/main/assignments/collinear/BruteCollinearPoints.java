@@ -22,7 +22,7 @@
 public class BruteCollinearPoints {
 
     private int numberOfSegments = 0;
-    private LineSegment[] segmentsContainer = new LineSegment[1];
+    private LineSegment[] segmentsContainer = new LineSegment[0];
 
     public BruteCollinearPoints(Point[] points) {
         validateInputData(points);
@@ -101,7 +101,7 @@ public class BruteCollinearPoints {
 
     private void addLineSegment(LineSegment newLineSegment) {
         if (numberOfSegments + 1 >= segmentsContainer.length) {
-            resizeSegmentsContainer(2 * segmentsContainer.length);
+            resizeSegmentsContainer(2 * (numberOfSegments + 1));
         }
 
         segmentsContainer[numberOfSegments++] = newLineSegment;
