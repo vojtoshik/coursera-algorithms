@@ -1,4 +1,5 @@
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Write a program BruteCollinearPoints.java that examines 4 points at a time and checks whether they all lie on the
@@ -186,6 +187,10 @@ public class BruteCollinearPoints {
 
         @Override
         public T next() {
+            if (cursor == null) {
+                throw new NoSuchElementException("I'm exhausted!");
+            }
+
             T entry = cursor.payload;
             cursor = cursor.next;
 
