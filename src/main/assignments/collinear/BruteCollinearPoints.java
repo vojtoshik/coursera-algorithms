@@ -1,3 +1,5 @@
+import java.util.Iterator;
+
 /**
  * Write a program BruteCollinearPoints.java that examines 4 points at a time and checks whether they all lie on the
  * same line segment, returning all such line segments. To check whether the 4 points p, q, r, and s are collinear,
@@ -21,8 +23,7 @@
  */
 public class BruteCollinearPoints {
 
-    private int numberOfSegments = 0;
-    private LineSegment[] segmentsContainer = new LineSegment[0];
+    private List<LineSegment> segmentsList = new List<>();
 
     public BruteCollinearPoints(Point[] points) {
         validateInputData(points);
@@ -30,7 +31,7 @@ public class BruteCollinearPoints {
         sort(points);
         checkForDuplicates(points);
 
-        if (points.length <= 4) {
+        if (points.length < 4) {
             return;
         }
 
@@ -38,11 +39,18 @@ public class BruteCollinearPoints {
     }
 
     public int numberOfSegments() {
-        return numberOfSegments;
+        return segmentsList.getItemsCount();
     }
 
     public LineSegment[] segments() {
-        return segmentsContainer;
+        LineSegment[] result = new LineSegment[segmentsList.getItemsCount()];
+        int index = 0;
+
+        for (LineSegment l : segmentsList) {
+            result[index++] = l;
+        }
+
+        return result;
     }
 
     private void checkForDuplicates(Point[] points) {
@@ -70,7 +78,7 @@ public class BruteCollinearPoints {
                     for (int l = k + 1; l < points.length; l++) {
 
                         if (points[i].slopeTo(points[k]) == points[i].slopeTo(points[l])) {
-                            addLineSegment(new LineSegment(points[i], points[l]));
+                            segmentsList.add(new LineSegment(points[i], points[l]));
                             // we may stop at this point as there are only 4 points in the same segment
                             break;
                         }
@@ -81,8 +89,6 @@ public class BruteCollinearPoints {
                 }
             }
         }
-
-        resizeSegmentsContainer(numberOfSegments);
     }
 
     private void throwExceptionIfNull(Object value) {
@@ -97,24 +103,6 @@ public class BruteCollinearPoints {
         for (int i = 0; i < points.length; i++) {
             throwExceptionIfNull(points[i]);
         }
-    }
-
-    private void addLineSegment(LineSegment newLineSegment) {
-        if (numberOfSegments + 1 >= segmentsContainer.length) {
-            resizeSegmentsContainer(2 * (numberOfSegments + 1));
-        }
-
-        segmentsContainer[numberOfSegments++] = newLineSegment;
-    }
-
-    private void resizeSegmentsContainer(int newSize) {
-        LineSegment[] newSegments = new LineSegment[newSize];
-
-        for (int i = 0; i < numberOfSegments; i++) {
-            newSegments[i] = segmentsContainer[i];
-        }
-
-        segmentsContainer = newSegments;
     }
 
     /**
@@ -136,6 +124,72 @@ public class BruteCollinearPoints {
                 array[j] = array[j - 1];
                 array[j - 1] = tmp;
             }
+        }
+    }
+
+    /**
+     * Unfortunately, there's restriction on number of files specified in problem requirements, so I have to put all
+     * auxiliary classes also here. To avoid even bigger nesting I put them all as children to BruteCollinearPoints
+     *
+     * @param <T>
+     */
+    private class ListEntry<T> {
+
+        private T payload;
+        private ListEntry<T> next;
+    }
+
+    private class List<T> implements Iterable<T> {
+
+        private int itemsCount = 0;
+
+        private ListEntry<T> head;
+        private ListEntry<T> tail;
+
+        public void add(T item) {
+            ListEntry<T> newEntry = new ListEntry<>();
+            newEntry.payload = item;
+
+            if (head == null) {
+                head = newEntry;
+                tail = newEntry;
+            } else {
+                tail.next = newEntry;
+                tail = newEntry;
+            }
+
+            itemsCount++;
+        }
+
+        public int getItemsCount() {
+            return itemsCount;
+        }
+
+        @Override
+        public Iterator<T> iterator() {
+            return new ListIterator<T>(head);
+        }
+    }
+
+    private class ListIterator<T> implements Iterator<T> {
+
+        private ListEntry<T> cursor;
+
+        public ListIterator(ListEntry<T> head) {
+            cursor = head;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return cursor != null;
+        }
+
+        @Override
+        public T next() {
+            T entry = cursor.payload;
+            cursor = cursor.next;
+
+            return entry;
         }
     }
 }
