@@ -147,13 +147,13 @@ public class BruteCollinearPoints {
      *
      * @param <T>
      */
-    private static class ListEntry<T> {
+    private class ListEntry<T> {
 
         private T payload;
         private ListEntry<T> next;
     }
 
-    public static class List<T> implements Iterable<T> {
+    private class List<T> implements Iterable<T> {
 
         private int itemsCount = 0;
 
@@ -185,7 +185,7 @@ public class BruteCollinearPoints {
         }
     }
 
-    public static class ListIterator<T> implements Iterator<T> {
+    private class ListIterator<T> implements Iterator<T> {
 
         private ListEntry<T> cursor;
 
