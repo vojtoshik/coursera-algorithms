@@ -20,6 +20,12 @@ import java.util.NoSuchElementException;
  * The order of growth of the running time of your program should be N^4 in the worst case and it should use space
  * proportional to N plus the number of line segments returned.
  *
+ * <i>A fly in the ointment</i>
+ * {@link FastCollinearPoints} and {@link BruteCollinearPoints} have quite a lot of common code, that I would love to
+ * move into separate classes, but it's not allowed because of restrictions specified in problem description (it's not
+ * allowed to have any other classes except BruteCollinearPoints, FastCollinearPoints and Point and it's prohibited to
+ * change API of those classes)
+ *
  * @author Anton Voitovych <vojtoshik@gmail.com>
  */
 public class BruteCollinearPoints {
@@ -142,8 +148,8 @@ public class BruteCollinearPoints {
     }
 
     /**
-     * Unfortunately, there's restriction on number of files specified in problem requirements, so I have to put all
-     * auxiliary classes also here. To avoid even bigger nesting I put them all as children to BruteCollinearPoints
+     * I have to put all auxiliary classes here because of restriction mentioned in header. To avoid even bigger nesting
+     * I put them all as children to {@link BruteCollinearPoints}
      *
      * @param <T>
      */
