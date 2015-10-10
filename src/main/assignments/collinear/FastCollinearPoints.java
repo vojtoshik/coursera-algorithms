@@ -1,3 +1,6 @@
+import edu.princeton.cs.algs4.StdRandom;
+
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -47,7 +50,7 @@ public class FastCollinearPoints {
         // we do this to avoid modifications to original array (for example, by sorting)
         Point[] points = copy(inputPoints);
 
-        sort(points);
+        sort(points, (o1, o2) -> o1.compareTo(o2));
         checkForDuplicates(points);
 
         if (points.length < 4) {
@@ -73,8 +76,47 @@ public class FastCollinearPoints {
         return result;
     }
 
-    private void searchSegments(Point[] points) {
+    private void searchSegments(Point[] originalPoints) {
+        for (int i = 0; i < originalPoints.length; i++) {
+            Point currentRelativePoint = originalPoints[i];
+            Point[] points = copy(originalPoints);
 
+            sort(points, currentRelativePoint.slopeOrder());
+
+            int indexOfCurrentSlope = 0;
+            double currentSlope = currentRelativePoint.slopeTo(points[indexOfCurrentSlope]);
+
+            for (int j = indexOfCurrentSlope + 1; j < points.length; j++) {
+                if (currentRelativePoint.slopeTo(points[j]) != currentSlope) {
+                    checkSegment(currentRelativePoint, points, indexOfCurrentSlope, j - 1);
+
+                    indexOfCurrentSlope = j;
+                    currentSlope = currentRelativePoint.slopeTo(points[j]);
+                }
+            }
+
+            checkSegment(currentRelativePoint, points, indexOfCurrentSlope, points.length - 1);
+        }
+    }
+
+    private void checkSegment(Point centralPoint, Point[] points, int startPoint, int endPoint) {
+        if (endPoint - startPoint + 1 < 3) {
+            return;
+        }
+
+        Point lastPoint = centralPoint;
+
+        for (int i = startPoint; i <= endPoint; i++) {
+            if (points[i].compareTo(centralPoint) < 0) {
+                return;
+            }
+
+            if (points[i].compareTo(lastPoint) > 0) {
+                lastPoint = points[i];
+            }
+        }
+
+        segmentsList.add(new LineSegment(centralPoint, lastPoint));
     }
 
     private Point[] copy(Point[] inputPoints) {
@@ -111,8 +153,44 @@ public class FastCollinearPoints {
         }
     }
 
-    private void sort(Point[] points) {
+    private <T> void sort(T[] array, Comparator<T> comparator) {
+        StdRandom.shuffle(array);
+        sort(array, comparator, 0, array.length - 1);
+    }
 
+    private <T> void sort(T[] array, Comparator<T> comparator, int leftBound, int rightBound) {
+        if (leftBound >= rightBound) {
+            return;
+        }
+
+        int leftIndex = leftBound - 1;
+        int rightIndex = rightBound + 1;
+
+        T mediumValue = array[leftBound + (rightBound - leftBound) / 2];
+
+        while (leftIndex < rightIndex) {
+
+            do {
+                leftIndex++;
+            } while (comparator.compare(array[leftIndex], mediumValue) < 0);
+
+            do {
+                rightIndex--;
+            } while (comparator.compare(array[rightIndex], mediumValue) > 0);
+
+            if (leftIndex < rightIndex) {
+                swap(array, leftIndex, rightIndex);
+            }
+        }
+
+        sort(array, comparator, leftBound, rightIndex);
+        sort(array, comparator, rightIndex + 1, rightBound);
+    }
+
+    private void swap(Object[] array, int index1, int index2) {
+        Object tmp = array[index1];
+        array[index1] = array[index2];
+        array[index2] = tmp;
     }
 
     /**
