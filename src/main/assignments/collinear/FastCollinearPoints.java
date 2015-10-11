@@ -201,20 +201,20 @@ public class FastCollinearPoints {
      */
     private class SegmentsIdentifier extends MergeResultsProcessor {
 
-        private Point currentRelativePoint;
+        private Point startPoint;
 
         private List<LineSegment> segments;
 
-        public SegmentsIdentifier(Point currentRelativePoint, List<LineSegment> segments) {
-            this.currentRelativePoint = currentRelativePoint;
+        public SegmentsIdentifier(Point startPoint, List<LineSegment> segments) {
+            this.startPoint = startPoint;
             this.segments = segments;
         }
 
         public void process(Point[] originalArray, Point[] sortedArray, int start, int finish) {
             boolean isLastMerge = start == 0 && finish == originalArray.length - 1;
 
-            if (isLastMerge && currentRelativePoint != null) {
-                identifySegments(currentRelativePoint, sortedArray);
+            if (isLastMerge && startPoint != null) {
+                identifySegments(sortedArray);
             } else {
                 copy(sortedArray, originalArray, start, finish);
             }
@@ -222,37 +222,35 @@ public class FastCollinearPoints {
 
         /**
          * Goes through {@code points} array, which is sorted by slope which each point has with
-         * {@code currentRelativePoint} and searches those points which build-up segment
+         * {@code startPoint} and searches those points which build-up segment
          *
-         * @param currentRelativePoint
          * @param points
          */
-        private void identifySegments(Point currentRelativePoint, Point[] points) {
+        private void identifySegments(Point[] points) {
             int indexOfCurrentSlope = 0;
-            double currentSlope = currentRelativePoint.slopeTo(points[indexOfCurrentSlope]);
+            double currentSlope = startPoint.slopeTo(points[indexOfCurrentSlope]);
 
             for (int j = indexOfCurrentSlope + 1; j < points.length; j++) {
-                if (currentRelativePoint.slopeTo(points[j]) != currentSlope) {
-                    addSegmentIfComplies(currentRelativePoint, points, indexOfCurrentSlope, j - 1);
+                if (startPoint.slopeTo(points[j]) != currentSlope) {
+                    addSegmentIfComplies(points, indexOfCurrentSlope, j - 1);
 
                     indexOfCurrentSlope = j;
-                    currentSlope = currentRelativePoint.slopeTo(points[j]);
+                    currentSlope = startPoint.slopeTo(points[j]);
                 }
             }
 
-            addSegmentIfComplies(currentRelativePoint, points, indexOfCurrentSlope, points.length - 1);
+            addSegmentIfComplies(points, indexOfCurrentSlope, points.length - 1);
         }
 
         /**
          * Checks whether segment complies with requirements (at least 4 points including {@code startPoint})
          * Also checks whether this particular segment is a duplicate
          *
-         * @param startPoint
          * @param points
          * @param startIndex
          * @param finishIndex
          */
-        private void addSegmentIfComplies(Point startPoint, Point[] points, int startIndex, int finishIndex) {
+        private void addSegmentIfComplies(Point[] points, int startIndex, int finishIndex) {
             if (finishIndex - startIndex + 1 < 3) {
                 return;
             }
