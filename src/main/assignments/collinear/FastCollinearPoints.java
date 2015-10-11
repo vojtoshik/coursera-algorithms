@@ -1,5 +1,3 @@
-import edu.princeton.cs.algs4.StdRandom;
-
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -50,7 +48,13 @@ public class FastCollinearPoints {
         // we do this to avoid modifications to original array (for example, by sorting)
         Point[] points = copy(inputPoints);
 
-        sort(points, (o1, o2) -> o1.compareTo(o2));
+        // sort points to identify duplicates
+        PointsMergeSort mergeSort = new PointsMergeSort(
+                (o1, o2) -> o1.compareTo(o2),
+                new MergeResultsProcessor()
+        );
+
+        mergeSort.sort(points);
         checkForDuplicates(points);
 
         if (points.length < 4) {
@@ -77,46 +81,18 @@ public class FastCollinearPoints {
     }
 
     private void searchSegments(Point[] originalPoints) {
+        Point[] points = copy(originalPoints);
+
         for (int i = 0; i < originalPoints.length; i++) {
+
             Point currentRelativePoint = originalPoints[i];
-            Point[] points = copy(originalPoints);
+            PointsMergeSort mergeSort = new PointsMergeSort(
+                    currentRelativePoint.slopeOrder(),
+                    new SegmentsIdentifier(currentRelativePoint, segmentsList)
+            );
 
-            sort(points, currentRelativePoint.slopeOrder());
-
-            int indexOfCurrentSlope = 0;
-            double currentSlope = currentRelativePoint.slopeTo(points[indexOfCurrentSlope]);
-
-            for (int j = indexOfCurrentSlope + 1; j < points.length; j++) {
-                if (currentRelativePoint.slopeTo(points[j]) != currentSlope) {
-                    checkSegment(currentRelativePoint, points, indexOfCurrentSlope, j - 1);
-
-                    indexOfCurrentSlope = j;
-                    currentSlope = currentRelativePoint.slopeTo(points[j]);
-                }
-            }
-
-            checkSegment(currentRelativePoint, points, indexOfCurrentSlope, points.length - 1);
+            mergeSort.sort(points);
         }
-    }
-
-    private void checkSegment(Point centralPoint, Point[] points, int startPoint, int endPoint) {
-        if (endPoint - startPoint + 1 < 3) {
-            return;
-        }
-
-        Point lastPoint = centralPoint;
-
-        for (int i = startPoint; i <= endPoint; i++) {
-            if (points[i].compareTo(centralPoint) < 0) {
-                return;
-            }
-
-            if (points[i].compareTo(lastPoint) > 0) {
-                lastPoint = points[i];
-            }
-        }
-
-        segmentsList.add(new LineSegment(centralPoint, lastPoint));
     }
 
     private Point[] copy(Point[] inputPoints) {
@@ -127,6 +103,12 @@ public class FastCollinearPoints {
         }
 
         return pointsCopy;
+    }
+
+    private void copy(Point[] source, Point[] destination, int start, int finish) {
+        for (int i = start; i <= finish; i++) {
+            destination[i] = source[i - start];
+        }
     }
 
     private void checkForDuplicates(Point[] points) {
@@ -153,44 +135,145 @@ public class FastCollinearPoints {
         }
     }
 
-    private <T> void sort(T[] array, Comparator<T> comparator) {
-        StdRandom.shuffle(array);
-        sort(array, comparator, 0, array.length - 1);
-    }
+    /**
+     * A bit modified version of merge sort which is capable to delegate processing of last step in merge method (which
+     * traditionally is process of copying results from temporary sorted array to original one).
+     *
+     * We need this modification to "inject" segments detection exactly after last merge (to decrease number of
+     * operations)
+     */
+    private class PointsMergeSort {
 
-    private <T> void sort(T[] array, Comparator<T> comparator, int leftBound, int rightBound) {
-        if (leftBound >= rightBound) {
-            return;
+        private Comparator<Point> comparator;
+        private MergeResultsProcessor mergeResultsProcessor;
+
+        public PointsMergeSort(Comparator<Point> comparator, MergeResultsProcessor mergeResultsProcessor) {
+            this.comparator = comparator;
+            this.mergeResultsProcessor = mergeResultsProcessor;
         }
 
-        int leftIndex = leftBound - 1;
-        int rightIndex = rightBound + 1;
+        public void sort(Point[] array) {
+            mergeSort(array, 0, array.length - 1);
+        }
 
-        T mediumValue = array[leftBound + (rightBound - leftBound) / 2];
+        private void merge(Point[] array, int start, int center, int finish) {
+            Point[] result = new Point[finish - start + 1];
 
-        while (leftIndex < rightIndex) {
+            int left = start,
+                    right = center + 1;
 
-            do {
-                leftIndex++;
-            } while (comparator.compare(array[leftIndex], mediumValue) < 0);
+            for (int i = 0; i <= finish - start; i++) {
+                if (right > finish || left <= center && comparator.compare(array[left], array[right]) <= 0) {
+                    result[i] = array[left++];
+                } else {
+                    result[i] = array[right++];
+                }
+            }
 
-            do {
-                rightIndex--;
-            } while (comparator.compare(array[rightIndex], mediumValue) > 0);
+            mergeResultsProcessor.process(array, result, start, finish);
+        }
 
-            if (leftIndex < rightIndex) {
-                swap(array, leftIndex, rightIndex);
+        private void mergeSort(Point[] array, int start, int finish) {
+            if (start >= finish) {
+                return;
+            }
+
+            int center = start + (finish - start) / 2;
+            mergeSort(array, start, center);
+            mergeSort(array, center + 1, finish);
+
+            merge(array, start, center, finish);
+        }
+    }
+
+    /**
+     * Instead of creating this class I would rather create functional interface, but it's not allowed :(
+     */
+    private class MergeResultsProcessor {
+        public void process(Point[] originalArray, Point[] sortedArray, int start, int finish) {
+            copy(sortedArray, originalArray, start, finish);
+        }
+    }
+
+    /**
+     * Merge processor which does exactly the same as {@link MergeResultsProcessor}, but on last step looks for
+     * segments
+     */
+    private class SegmentsIdentifier extends MergeResultsProcessor {
+
+        private Point currentRelativePoint;
+
+        private List<LineSegment> segments;
+
+        public SegmentsIdentifier(Point currentRelativePoint, List<LineSegment> segments) {
+            this.currentRelativePoint = currentRelativePoint;
+            this.segments = segments;
+        }
+
+        public void process(Point[] originalArray, Point[] sortedArray, int start, int finish) {
+            boolean isLastMerge = start == 0 && finish == originalArray.length - 1;
+
+            if (isLastMerge && currentRelativePoint != null) {
+                identifySegments(currentRelativePoint, sortedArray);
+            } else {
+                copy(sortedArray, originalArray, start, finish);
             }
         }
 
-        sort(array, comparator, leftBound, rightIndex);
-        sort(array, comparator, rightIndex + 1, rightBound);
-    }
+        /**
+         * Goes through {@code points} array, which is sorted by slope which each point has with
+         * {@code currentRelativePoint} and searches those points which build-up segment
+         *
+         * @param currentRelativePoint
+         * @param points
+         */
+        private void identifySegments(Point currentRelativePoint, Point[] points) {
+            int indexOfCurrentSlope = 0;
+            double currentSlope = currentRelativePoint.slopeTo(points[indexOfCurrentSlope]);
 
-    private void swap(Object[] array, int index1, int index2) {
-        Object tmp = array[index1];
-        array[index1] = array[index2];
-        array[index2] = tmp;
+            for (int j = indexOfCurrentSlope + 1; j < points.length; j++) {
+                if (currentRelativePoint.slopeTo(points[j]) != currentSlope) {
+                    addSegmentIfComplies(currentRelativePoint, points, indexOfCurrentSlope, j - 1);
+
+                    indexOfCurrentSlope = j;
+                    currentSlope = currentRelativePoint.slopeTo(points[j]);
+                }
+            }
+
+            addSegmentIfComplies(currentRelativePoint, points, indexOfCurrentSlope, points.length - 1);
+        }
+
+        /**
+         * Checks whether segment complies with requirements (at least 4 points including {@code startPoint})
+         * Also checks whether this particular segment is a duplicate
+         *
+         * @param startPoint
+         * @param points
+         * @param startIndex
+         * @param finishIndex
+         */
+        private void addSegmentIfComplies(Point startPoint, Point[] points, int startIndex, int finishIndex) {
+            if (finishIndex - startIndex + 1 < 3) {
+                return;
+            }
+
+            Point lastPoint = startPoint;
+
+            for (int i = startIndex; i <= finishIndex; i++) {
+                // if startPoint is not first point in the segment - that means that this segment was already found,
+                // so we skip it
+                if (points[i].compareTo(startPoint) < 0) {
+                    return;
+                }
+
+                // searching for last point in segment
+                if (points[i].compareTo(lastPoint) > 0) {
+                    lastPoint = points[i];
+                }
+            }
+
+            segments.add(new LineSegment(startPoint, lastPoint));
+        }
     }
 
     /**
