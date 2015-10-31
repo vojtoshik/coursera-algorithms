@@ -32,7 +32,23 @@ public class Board {
     }
 
     public boolean isGoal() {
-        return false;
+
+        for (int i = 0; i < dimension; i++) {
+
+            for (int j = 0; j < dimension; j++) {
+
+                boolean isPlaceForZero = i + 1 == dimension && j + 1 == dimension;
+                int expectedValue = i * dimension + j + 1;
+
+                if (board[i][j] == expectedValue || isPlaceForZero && board[i][j] == 0) {
+                    continue;
+                }
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public int manhattan() {
