@@ -28,10 +28,8 @@ public class Board {
     }
 
     public int hamming() {
-        return 0;
-    }
 
-    public boolean isGoal() {
+        int result = 0;
 
         for (int i = 0; i < dimension; i++) {
 
@@ -44,12 +42,13 @@ public class Board {
                     continue;
                 }
 
-                return false;
+                result++;
             }
         }
 
-        return true;
+        return result;
     }
+
 
     public int manhattan() {
         return 0;
@@ -61,6 +60,12 @@ public class Board {
 
     public Iterable<Board> neighbors() {
         return null;
+    }
+
+    public boolean isGoal() {
+        // well, we could implement iteration through board and stop as soon as we find element on wrong place, but
+        // to keep code cleaner let's reuse hamming() heuristic function for that
+        return hamming() == 0;
     }
 
     public boolean equals(Object y) {
