@@ -7,20 +7,8 @@ public class Board {
     private int dimension;
 
     public Board(int[][] blocks) {
-
-        dimension = blocks.length;
-        board = new int[dimension][dimension];
-
-        for (int i = 0; i < dimension; i++) {
-
-            if (blocks[i].length != dimension) {
-                throw new IllegalArgumentException("Board has illegal size!");
-            }
-
-            for (int j = 0; j < dimension; j++) {
-                board[i][j] = blocks[i][j];
-            }
-        }
+        board = copyOf(blocks);
+        dimension = board.length;
     }
 
     public int dimension() {
@@ -67,7 +55,15 @@ public class Board {
     }
 
     public Board twin() {
-        return null;
+        int[][] twin = copyOf(board);
+
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; j++) {
+                if (twin[i][j] != 0)
+            }
+        }
+
+        return new Board(twin);
     }
 
     public Iterable<Board> neighbors() {
@@ -86,5 +82,24 @@ public class Board {
 
     public String toString() {
         return "";
+    }
+
+    private int[][] copyOf(int[][] originalBoard) {
+
+        int size = originalBoard.length;
+        int[][] copyBoard = new int[size][size];
+
+        for (int i = 0; i < dimension; i++) {
+
+            if (originalBoard[i].length != size) {
+                throw new IllegalArgumentException("Board has illegal size!");
+            }
+
+            for (int j = 0; j < dimension; j++) {
+                copyBoard[i][j] = originalBoard[i][j];
+            }
+        }
+
+        return copyBoard;
     }
 }
