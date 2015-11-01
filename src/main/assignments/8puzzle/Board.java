@@ -15,10 +15,16 @@ public class Board {
         dimension = (int)Math.sqrt(board.length);
     }
 
+    /**
+     * @return board dimension N
+     */
     public int dimension() {
         return dimension;
     }
 
+    /**
+     * @return number of blocks out of place
+     */
     public int hamming() {
 
         int result = 0;
@@ -37,6 +43,9 @@ public class Board {
         return result;
     }
 
+    /**
+     * @return sum of Manhattan distances between blocks and goal
+     */
     public int manhattan() {
 
         int result = 0;
@@ -54,18 +63,38 @@ public class Board {
         return result;
     }
 
+    /**
+     * @return board that that obtained by exchanging any pair of blocks
+     */
     public Board twin() {
-        return null;
+
+        int[] twinArray = copyOf(board);
+
+        int firstIndex = findNextNonZeroValueIndex(twinArray, 0);
+        int secondIndex = findNextNonZeroValueIndex(twinArray, firstIndex + 1);
+
+        swap(twinArray, firstIndex, secondIndex);
+
+        return new Board(twinArray);
     }
 
     public Iterable<Board> neighbors() {
         return null;
     }
 
+    /**
+     * @return true, if all blocks are in correct place
+     */
     public boolean isGoal() {
-        // well, we could implement iteration through board and stop as soon as we find element on wrong place, but
-        // to keep code cleaner let's reuse hamming() heuristic function for that
-        return hamming() == 0;
+
+        // we don't check last element as it supposed to be 0
+        for (int i = 0; i < board.length - 1; i++) {
+            if (board[i] != i + 1) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public boolean equals(Object y) {
@@ -74,6 +103,18 @@ public class Board {
 
     public String toString() {
         return "";
+    }
+
+    private static int findNextNonZeroValueIndex(int[] array, int startFrom) {
+
+        for (int i = startFrom; i < array.length; i++) {
+            if (array[i] != 0) {
+                return i;
+            }
+        }
+
+        // should not happen in real life
+        return -1;
     }
 
     private static int getRow(int index, int dimension) {
@@ -98,5 +139,18 @@ public class Board {
         }
 
         return flattenedBoard;
+    }
+
+    private static int[] copyOf(int[] array) {
+        int[] copy = new int[array.length];
+        System.arraycopy(array, 0, copy, 0, array.length);
+
+        return copy;
+    }
+
+    private static void swap(int[] array, int aIndex, int bIndex) {
+        int tmp = array[aIndex];
+        array[aIndex] = array[bIndex];
+        array[bIndex] = tmp;
     }
 }
