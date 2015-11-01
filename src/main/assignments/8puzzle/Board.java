@@ -97,8 +97,20 @@ public class Board {
         return true;
     }
 
-    public boolean equals(Object y) {
-        return false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Board boardToCompareWith = (Board) o;
+
+        for (int i = 0; i < dimension; i++) {
+            if (board[i] != boardToCompareWith.board[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public String toString() {
