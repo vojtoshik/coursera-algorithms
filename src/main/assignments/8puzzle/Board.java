@@ -51,7 +51,19 @@ public class Board {
 
 
     public int manhattan() {
-        return 0;
+
+        int result = 0;
+
+        for (int i = 0; i < dimension; i++) {
+            for (int j = 0; j < dimension; i++) {
+                int expectedI = (board[i][j] - 1) / dimension;
+                int expectedJ = (board[i][j] - 1) % dimension;
+
+                result += Math.abs(expectedI - i) + Math.abs(expectedJ - j);
+            }
+        }
+
+        return result;
     }
 
     public Board twin() {
