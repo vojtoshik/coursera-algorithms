@@ -3,12 +3,16 @@
  */
 public class Board {
 
-    private int[][] board;
+    private int[] board;
     private int dimension;
 
     public Board(int[][] blocks) {
-        board = copyOf(blocks);
-        dimension = board.length;
+        this(flattenBoard(blocks));
+    }
+
+    private Board(int[] blocks) {
+        board = blocks;
+        dimension = (int)Math.sqrt(board.length);
     }
 
     public int dimension() {
@@ -19,51 +23,39 @@ public class Board {
 
         int result = 0;
 
-        for (int i = 0; i < dimension; i++) {
+        for (int i = 0; i < board.length; i++) {
 
-            for (int j = 0; j < dimension; j++) {
+            boolean isPlaceForZero = i == board.length - 1;
 
-                boolean isPlaceForZero = i + 1 == dimension && j + 1 == dimension;
-                int expectedValue = i * dimension + j + 1;
-
-                if (board[i][j] == expectedValue || isPlaceForZero && board[i][j] == 0) {
-                    continue;
-                }
-
-                result++;
+            if (board[i] == i || isPlaceForZero && board[i] == 0) {
+                continue;
             }
+
+            result++;
         }
 
         return result;
     }
 
-
     public int manhattan() {
 
         int result = 0;
 
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; i++) {
-                int expectedI = (board[i][j] - 1) / dimension;
-                int expectedJ = (board[i][j] - 1) % dimension;
+        for (int i = 0; i < board.length; i++) {
+            int expectedRow = getRow(board[i] - 1, dimension);
+            int expectedColumn = getColumn(board[i] - 1, dimension);
 
-                result += Math.abs(expectedI - i) + Math.abs(expectedJ - j);
-            }
+            int actualRow = getRow(i, dimension);
+            int actualColumn = getColumn(i, dimension);
+
+            result += Math.abs(expectedRow - actualRow) + Math.abs(expectedColumn - actualColumn);
         }
 
         return result;
     }
 
     public Board twin() {
-        int[][] twin = copyOf(board);
-
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++) {
-                if (twin[i][j] != 0)
-            }
-        }
-
-        return new Board(twin);
+        return null;
     }
 
     public Iterable<Board> neighbors() {
@@ -84,22 +76,27 @@ public class Board {
         return "";
     }
 
-    private int[][] copyOf(int[][] originalBoard) {
+    private static int getRow(int index, int dimension) {
+        return index / dimension;
+    }
 
+    private static int getColumn(int index, int dimension) {
+        return index % dimension;
+    }
+
+    private static int[] flattenBoard(int[][] originalBoard) {
         int size = originalBoard.length;
-        int[][] copyBoard = new int[size][size];
+        int[] flattenedBoard = new int[size * size];
 
-        for (int i = 0; i < dimension; i++) {
+        for (int i = 0; i < size * size; i++) {
 
             if (originalBoard[i].length != size) {
-                throw new IllegalArgumentException("Board has illegal size!");
+                throw new IllegalArgumentException("Passed board has wrong dimension!");
             }
 
-            for (int j = 0; j < dimension; j++) {
-                copyBoard[i][j] = originalBoard[i][j];
-            }
+            flattenedBoard[i] = originalBoard[getRow(i, size)][getColumn(i, size)];
         }
 
-        return copyBoard;
+        return flattenedBoard;
     }
 }
