@@ -121,7 +121,19 @@ public class Board {
     }
 
     public String toString() {
-        return "";
+
+        String result = String.valueOf(dimension);
+
+        for (int i = 0; i < board.length; i++) {
+
+            if (i % dimension == 0) {
+                result += "\n";
+            }
+
+            result += " " + board[i];
+        }
+
+        return result;
     }
 
     private static int findNextNonZeroValueIndex(int[] array, int startFrom) {
@@ -162,7 +174,7 @@ public class Board {
 
         for (int i = 0; i < size * size; i++) {
 
-            if (originalBoard[i].length != size) {
+            if (originalBoard[getRow(i, size)].length != size) {
                 throw new IllegalArgumentException("Passed board has wrong dimension!");
             }
 
