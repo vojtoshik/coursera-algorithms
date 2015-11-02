@@ -1,10 +1,15 @@
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 /**
  * @author Anton Voitovych <vojtoshik@gmail.com>
  */
 public class Board {
 
-    private int[] board;
-    private int dimension;
+    private final int[] board;
+    private final int dimension;
+
+    private final int zeroValueIndex;
 
     public Board(int[][] blocks) {
         this(flattenBoard(blocks));
@@ -13,6 +18,7 @@ public class Board {
     private Board(int[] blocks) {
         board = blocks;
         dimension = (int)Math.sqrt(board.length);
+        zeroValueIndex = findZeroValueIndex(blocks);
     }
 
     /**
@@ -79,7 +85,8 @@ public class Board {
     }
 
     public Iterable<Board> neighbors() {
-        return null;
+
+        return () -> new NeighborsIterator();
     }
 
     /**
@@ -129,6 +136,18 @@ public class Board {
         return -1;
     }
 
+    private static int findZeroValueIndex(int[] array) {
+
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] == 0) {
+                return i;
+            }
+        }
+
+        // should not happen in real life
+        return -1;
+    }
+
     private static int getRow(int index, int dimension) {
         return index / dimension;
     }
@@ -164,5 +183,73 @@ public class Board {
         int tmp = array[aIndex];
         array[aIndex] = array[bIndex];
         array[bIndex] = tmp;
+    }
+
+    /**
+     * This iterator relies on the fact that Board is immutable
+     */
+    private class NeighborsIterator implements Iterator<Board> {
+
+        private final int[][] directions = {
+                {-1, 0}, // up
+                {0, 1},  // right
+                {1, 0},  // down
+                {-1, 0}  // left
+        };
+
+        private final int DIRECTION_INDEX_UP = 0;
+        private final int DIRECTION_INDEX_RIGHT = 1;
+        private final int DIRECTION_INDEX_DOWN = 2;
+        private final int DIRECTION_INDEX_LEFT = 3;
+
+        private int lastTimeMovedToDirection = -1;
+
+        private final int zeroRow;
+        private final int zeroColumn;
+
+        public NeighborsIterator() {
+            zeroRow = getRow(zeroValueIndex, dimension);
+            zeroColumn = getRow(zeroValueIndex, dimension);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return
+                    lastTimeMovedToDirection < DIRECTION_INDEX_UP    && canMove(DIRECTION_INDEX_UP) ||
+                    lastTimeMovedToDirection < DIRECTION_INDEX_RIGHT && canMove(DIRECTION_INDEX_RIGHT) ||
+                    lastTimeMovedToDirection < DIRECTION_INDEX_DOWN  && canMove(DIRECTION_INDEX_DOWN) ||
+                    lastTimeMovedToDirection < DIRECTION_INDEX_LEFT  && canMove(DIRECTION_INDEX_LEFT);
+        }
+
+        @Override
+        public Board next() {
+
+            for (int i = lastTimeMovedToDirection + 1; i < 4; i++) {
+                if (canMove(i)) {
+                    return move(i);
+                }
+            }
+
+            throw new NoSuchElementException("Iterator is exhausted!");
+        }
+
+        private boolean canMove(int direction) {
+
+            int newRow = zeroRow + directions[direction][0];
+            int newColumn = zeroColumn + directions[direction][1];
+
+            return newRow < 0 || newColumn < 0 || newRow >= dimension || newColumn >= dimension;
+        }
+
+        private Board move(int direction) {
+
+            int newRow = zeroRow + directions[direction][0];
+            int newColumn = zeroColumn + directions[direction][1];
+
+            int[] newBoard = copyOf(board);
+            swap(newBoard, zeroValueIndex, newRow * dimension + newColumn);
+
+            return new Board(newBoard);
+        }
     }
 }
