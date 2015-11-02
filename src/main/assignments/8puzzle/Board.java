@@ -206,7 +206,7 @@ public class Board {
                 {-1, 0}, // up
                 {0, 1},  // right
                 {1, 0},  // down
-                {-1, 0}  // left
+                {0, -1}  // left
         };
 
         private final int DIRECTION_INDEX_UP = 0;
@@ -250,7 +250,7 @@ public class Board {
             int newRow = zeroRow + directions[direction][0];
             int newColumn = zeroColumn + directions[direction][1];
 
-            return newRow < 0 || newColumn < 0 || newRow >= dimension || newColumn >= dimension;
+            return newRow >= 0 && newColumn >= 0 && newRow < dimension && newColumn < dimension;
         }
 
         private Board move(int direction) {
