@@ -249,6 +249,8 @@ public class Board {
             int[] newBoard = copyOf(board);
             swap(newBoard, zeroValueIndex, newRow * dimension + newColumn);
 
+            lastTimeMovedToDirection = direction;
+
             return new Board(newBoard);
         }
     }
