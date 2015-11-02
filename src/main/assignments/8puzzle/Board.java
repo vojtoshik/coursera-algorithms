@@ -37,9 +37,7 @@ public class Board {
 
         for (int i = 0; i < board.length; i++) {
 
-            boolean isPlaceForZero = i == board.length - 1;
-
-            if (board[i] == i || isPlaceForZero && board[i] == 0) {
+            if (board[i] == i + 1 || board[i] == 0) {
                 continue;
             }
 
@@ -57,6 +55,11 @@ public class Board {
         int result = 0;
 
         for (int i = 0; i < board.length; i++) {
+
+            if (board[i] == 0) {
+                continue;
+            }
+
             int expectedRow = getRow(board[i] - 1, dimension);
             int expectedColumn = getColumn(board[i] - 1, dimension);
 
@@ -111,7 +114,7 @@ public class Board {
 
         Board boardToCompareWith = (Board) o;
 
-        for (int i = 0; i < dimension; i++) {
+        for (int i = 0; i < board.length; i++) {
             if (board[i] != boardToCompareWith.board[i]) {
                 return false;
             }
@@ -221,7 +224,7 @@ public class Board {
 
         public NeighborsIterator() {
             zeroRow = getRow(zeroValueIndex, dimension);
-            zeroColumn = getRow(zeroValueIndex, dimension);
+            zeroColumn = getColumn(zeroValueIndex, dimension);
         }
 
         @Override
